@@ -1,4 +1,3 @@
-# Notes from Claude...
 Here's what's in the zip and why it's structured this way:
 
 bootstrap/main.tf — run this exactly once before anything else. It creates the S3 bucket and DynamoDB lock table using local state (no backend block), because you need those resources to exist before you can configure a remote backend that points to them. That's the classic chicken-and-egg problem with remote state.
