@@ -1,0 +1,693 @@
+# module.environment.aws_eip.nat:
+resource "aws_eip" "nat" {
+    allocation_id            = "eipalloc-064119a75d3ae8c51"
+    arn                      = "arn:aws:ec2:us-east-1:566307772614:elastic-ip/eipalloc-064119a75d3ae8c51"
+    association_id           = null
+    carrier_ip               = null
+    customer_owned_ip        = null
+    customer_owned_ipv4_pool = null
+    domain                   = "vpc"
+    id                       = "eipalloc-064119a75d3ae8c51"
+    instance                 = null
+    network_border_group     = "us-east-1"
+    network_interface        = null
+    private_ip               = null
+    ptr_record               = null
+    public_dns               = "ec2-54-156-216-33.compute-1.amazonaws.com"
+    public_ip                = "54.156.216.33"
+    public_ipv4_pool         = "amazon"
+    tags                     = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-nat-eip"
+        "Project"       = "myproject"
+    }
+    tags_all                 = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-nat-eip"
+        "Project"       = "myproject"
+    }
+    vpc                      = true
+}
+
+# module.environment.aws_iam_instance_profile.app:
+resource "aws_iam_instance_profile" "app" {
+    arn         = "arn:aws:iam::566307772614:instance-profile/myproject-prod-app-profile"
+    create_date = "2026-07-21T21:41:02Z"
+    id          = "myproject-prod-app-profile"
+    name        = "myproject-prod-app-profile"
+    name_prefix = null
+    path        = "/"
+    role        = "myproject-prod-app-role"
+    tags        = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Project"       = "myproject"
+    }
+    tags_all    = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Project"       = "myproject"
+    }
+    unique_id   = "AIPAYHWUS3DDBGWGTV33L"
+}
+
+# module.environment.aws_iam_role.app:
+resource "aws_iam_role" "app" {
+    arn                   = "arn:aws:iam::566307772614:role/myproject-prod-app-role"
+    assume_role_policy    = jsonencode(
+        {
+            Statement = [
+                {
+                    Action    = "sts:AssumeRole"
+                    Effect    = "Allow"
+                    Principal = {
+                        Service = "ec2.amazonaws.com"
+                    }
+                },
+            ]
+            Version   = "2012-10-17"
+        }
+    )
+    create_date           = "2026-07-21T21:41:02Z"
+    description           = "Role for prod app servers"
+    force_detach_policies = false
+    id                    = "myproject-prod-app-role"
+    managed_policy_arns   = []
+    max_session_duration  = 3600
+    name                  = "myproject-prod-app-role"
+    name_prefix           = null
+    path                  = "/"
+    permissions_boundary  = null
+    tags                  = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Project"       = "myproject"
+    }
+    tags_all              = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Project"       = "myproject"
+    }
+    unique_id             = "AROAYHWUS3DDI4RPOIHNI"
+}
+
+# module.environment.aws_iam_role_policy.s3_access:
+resource "aws_iam_role_policy" "s3_access" {
+    id          = "myproject-prod-app-role:myproject-prod-s3-access"
+    name        = "myproject-prod-s3-access"
+    name_prefix = null
+    policy      = jsonencode(
+        {
+            Statement = [
+                {
+                    Action   = [
+                        "s3:GetObject",
+                        "s3:ListBucket",
+                    ]
+                    Effect   = "Allow"
+                    Resource = [
+                        "arn:aws:s3:::myproject-prod-*",
+                        "arn:aws:s3:::myproject-prod-*/*",
+                    ]
+                },
+            ]
+            Version   = "2012-10-17"
+        }
+    )
+    role        = "myproject-prod-app-role"
+}
+
+# module.environment.aws_iam_role_policy_attachment.cloudwatch:
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+    id         = "myproject-prod-app-role-20260721214103076300000002"
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+    role       = "myproject-prod-app-role"
+}
+
+# module.environment.aws_iam_role_policy_attachment.ssm:
+resource "aws_iam_role_policy_attachment" "ssm" {
+    id         = "myproject-prod-app-role-20260721214102940400000001"
+    policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    role       = "myproject-prod-app-role"
+}
+
+# module.environment.aws_instance.app:
+resource "aws_instance" "app" {
+    ami                                  = "ami-0c02fb55956c7d316"
+    arn                                  = "arn:aws:ec2:us-east-1:566307772614:instance/i-09d6ecf3d03751b48"
+    associate_public_ip_address          = true
+    availability_zone                    = "us-east-1c"
+    cpu_core_count                       = 1
+    cpu_threads_per_core                 = 2
+    disable_api_stop                     = false
+    disable_api_termination              = false
+    ebs_optimized                        = false
+    get_password_data                    = false
+    hibernation                          = false
+    host_id                              = null
+    iam_instance_profile                 = "myproject-prod-app-profile"
+    id                                   = "i-09d6ecf3d03751b48"
+    instance_initiated_shutdown_behavior = "stop"
+    instance_lifecycle                   = null
+    instance_state                       = "running"
+    instance_type                        = "t3.medium"
+    ipv6_address_count                   = 0
+    ipv6_addresses                       = []
+    key_name                             = "terraform_key_pair-prod"
+    monitoring                           = false
+    outpost_arn                          = null
+    password_data                        = null
+    placement_group                      = null
+    placement_partition_number           = 0
+    primary_network_interface_id         = "eni-0bcc568f957e2d297"
+    private_dns                          = "ip-10-2-1-109.ec2.internal"
+    private_ip                           = "10.2.1.109"
+    public_dns                           = "ec2-54-234-151-139.compute-1.amazonaws.com"
+    public_ip                            = "54.234.151.139"
+    secondary_private_ips                = []
+    security_groups                      = []
+    source_dest_check                    = true
+    spot_instance_request_id             = null
+    subnet_id                            = "subnet-060e35b292347115d"
+    tags                                 = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-app"
+        "Project"       = "myproject"
+        "Role"          = "app-server"
+    }
+    tags_all                             = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-app"
+        "Project"       = "myproject"
+        "Role"          = "app-server"
+    }
+    tenancy                              = "default"
+    user_data                            = "a7bd3d45f0f23ea0924b18802759cd70ac91c8ce"
+    user_data_replace_on_change          = false
+    vpc_security_group_ids               = [
+        "sg-006d17ce7de360e9c",
+    ]
+
+    capacity_reservation_specification {
+        capacity_reservation_preference = "open"
+    }
+
+    cpu_options {
+        amd_sev_snp      = null
+        core_count       = 1
+        threads_per_core = 2
+    }
+
+    credit_specification {
+        cpu_credits = "unlimited"
+    }
+
+    enclave_options {
+        enabled = false
+    }
+
+    maintenance_options {
+        auto_recovery = "default"
+    }
+
+    metadata_options {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_put_response_hop_limit = 1
+        http_tokens                 = "optional"
+        instance_metadata_tags      = "disabled"
+    }
+
+    private_dns_name_options {
+        enable_resource_name_dns_a_record    = false
+        enable_resource_name_dns_aaaa_record = false
+        hostname_type                        = "ip-name"
+    }
+
+    root_block_device {
+        delete_on_termination = true
+        device_name           = "/dev/xvda"
+        encrypted             = true
+        iops                  = 3000
+        kms_key_id            = "arn:aws:kms:us-east-1:566307772614:key/0a6b422b-5ac5-4a1a-a595-4e3fb6a312d9"
+        tags_all              = {
+            "Environment" = "prod"
+            "ManagedBy"   = "terraform"
+        }
+        throughput            = 125
+        volume_id             = "vol-08aeedd41cffc0f86"
+        volume_size           = 50
+        volume_type           = "gp3"
+    }
+}
+
+# module.environment.aws_internet_gateway.main:
+resource "aws_internet_gateway" "main" {
+    arn      = "arn:aws:ec2:us-east-1:566307772614:internet-gateway/igw-076664f985a50a05a"
+    id       = "igw-076664f985a50a05a"
+    owner_id = "566307772614"
+    tags     = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-igw"
+        "Project"       = "myproject"
+    }
+    tags_all = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-igw"
+        "Project"       = "myproject"
+    }
+    vpc_id   = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_key_pair.app[0]:
+resource "aws_key_pair" "app" {
+    arn             = "arn:aws:ec2:us-east-1:566307772614:key-pair/terraform_key_pair-prod"
+    fingerprint     = "e8:fe:f3:07:43:3b:32:ae:45:88:0d:64:e5:05:31:c4"
+    id              = "terraform_key_pair-prod"
+    key_name        = "terraform_key_pair-prod"
+    key_name_prefix = null
+    key_pair_id     = "key-0cbacb58cee2b7ec5"
+    key_type        = "rsa"
+    public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQhYU7LuVWWmxaKoz4MzvxMkRZjY2bce4Sme5KU2ZBXLQa0cy/Hg39kiKJUfFrjl+CrwYAQs41dL58wqin5fhbOQEKcGSpXxR+44GPH9i6VaKIGcpUid9umXqJjqnKhz3YzMp+GhMfbMT6mK2p14MbCkpTtCezLSqrvbcb9dvHYKBNSjr8CFJo9dsSyF55y6P+xAClWMjpNomz/yk44//g9GVXqpgWDH79oc1Y/s55Eb5VdYnPOLQ4kp49vfuaVkuDGkQ7l/yKCy6buEqTHeFM1X9Qt5QLTEuGrR1Uh+rqFPJqQpID2kKDsEfsv5fX6bdarqQhI7Z0EG86Wtnyr7oZ"
+    tags_all        = {
+        "Environment" = "prod"
+        "ManagedBy"   = "terraform"
+    }
+}
+
+# module.environment.aws_nat_gateway.main:
+resource "aws_nat_gateway" "main" {
+    allocation_id                      = "eipalloc-064119a75d3ae8c51"
+    association_id                     = "eipassoc-086c473404d8c8b39"
+    connectivity_type                  = "public"
+    id                                 = "nat-01e2265a95780cca0"
+    network_interface_id               = "eni-097e1d9c485a19cb0"
+    private_ip                         = "10.2.1.186"
+    public_ip                          = "54.156.216.33"
+    secondary_private_ip_address_count = 0
+    secondary_private_ip_addresses     = []
+    subnet_id                          = "subnet-060e35b292347115d"
+    tags                               = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-nat"
+        "Project"       = "myproject"
+    }
+    tags_all                           = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-nat"
+        "Project"       = "myproject"
+    }
+}
+
+# module.environment.aws_route_table.private:
+resource "aws_route_table" "private" {
+    arn              = "arn:aws:ec2:us-east-1:566307772614:route-table/rtb-090604867d91836a6"
+    id               = "rtb-090604867d91836a6"
+    owner_id         = "566307772614"
+    propagating_vgws = []
+    route            = [
+        {
+            carrier_gateway_id         = null
+            cidr_block                 = "0.0.0.0/0"
+            core_network_arn           = null
+            destination_prefix_list_id = null
+            egress_only_gateway_id     = null
+            gateway_id                 = null
+            ipv6_cidr_block            = null
+            local_gateway_id           = null
+            nat_gateway_id             = "nat-01e2265a95780cca0"
+            network_interface_id       = null
+            transit_gateway_id         = null
+            vpc_endpoint_id            = null
+            vpc_peering_connection_id  = null
+        },
+    ]
+    tags             = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-rt-private"
+        "Project"       = "myproject"
+    }
+    tags_all         = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-rt-private"
+        "Project"       = "myproject"
+    }
+    vpc_id           = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_route_table.public:
+resource "aws_route_table" "public" {
+    arn              = "arn:aws:ec2:us-east-1:566307772614:route-table/rtb-05cba42c61266cbe5"
+    id               = "rtb-05cba42c61266cbe5"
+    owner_id         = "566307772614"
+    propagating_vgws = []
+    route            = [
+        {
+            carrier_gateway_id         = null
+            cidr_block                 = "0.0.0.0/0"
+            core_network_arn           = null
+            destination_prefix_list_id = null
+            egress_only_gateway_id     = null
+            gateway_id                 = "igw-076664f985a50a05a"
+            ipv6_cidr_block            = null
+            local_gateway_id           = null
+            nat_gateway_id             = null
+            network_interface_id       = null
+            transit_gateway_id         = null
+            vpc_endpoint_id            = null
+            vpc_peering_connection_id  = null
+        },
+    ]
+    tags             = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-rt-public"
+        "Project"       = "myproject"
+    }
+    tags_all         = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-rt-public"
+        "Project"       = "myproject"
+    }
+    vpc_id           = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_route_table_association.private:
+resource "aws_route_table_association" "private" {
+    gateway_id     = null
+    id             = "rtbassoc-03bea172fd4a27ee9"
+    route_table_id = "rtb-090604867d91836a6"
+    subnet_id      = "subnet-08826650c04890e67"
+}
+
+# module.environment.aws_route_table_association.public:
+resource "aws_route_table_association" "public" {
+    gateway_id     = null
+    id             = "rtbassoc-07ab0176b6f4eaa35"
+    route_table_id = "rtb-05cba42c61266cbe5"
+    subnet_id      = "subnet-060e35b292347115d"
+}
+
+# module.environment.aws_security_group.app:
+resource "aws_security_group" "app" {
+    arn                    = "arn:aws:ec2:us-east-1:566307772614:security-group/sg-006d17ce7de360e9c"
+    description            = "App server security group for prod"
+    egress                 = [
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = null
+            from_port        = 0
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            protocol         = "-1"
+            security_groups  = []
+            self             = false
+            to_port          = 0
+        },
+    ]
+    id                     = "sg-006d17ce7de360e9c"
+    ingress                = [
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = "App traffic"
+            from_port        = 8080
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            protocol         = "tcp"
+            security_groups  = []
+            self             = false
+            to_port          = 8080
+        },
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = "HTTPS"
+            from_port        = 443
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            protocol         = "tcp"
+            security_groups  = []
+            self             = false
+            to_port          = 443
+        },
+        {
+            cidr_blocks      = [
+                "10.2.0.0/16",
+            ]
+            description      = "SSH"
+            from_port        = 22
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            protocol         = "tcp"
+            security_groups  = []
+            self             = false
+            to_port          = 22
+        },
+    ]
+    name                   = "myproject-prod-app-sg"
+    name_prefix            = null
+    owner_id               = "566307772614"
+    revoke_rules_on_delete = false
+    tags                   = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-app-sg"
+        "Project"       = "myproject"
+    }
+    tags_all               = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-app-sg"
+        "Project"       = "myproject"
+    }
+    vpc_id                 = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_subnet.private:
+resource "aws_subnet" "private" {
+    arn                                            = "arn:aws:ec2:us-east-1:566307772614:subnet/subnet-08826650c04890e67"
+    assign_ipv6_address_on_creation                = false
+    availability_zone                              = "us-east-1c"
+    availability_zone_id                           = "use1-az4"
+    cidr_block                                     = "10.2.2.0/24"
+    customer_owned_ipv4_pool                       = null
+    enable_dns64                                   = false
+    enable_lni_at_device_index                     = 0
+    enable_resource_name_dns_a_record_on_launch    = false
+    enable_resource_name_dns_aaaa_record_on_launch = false
+    id                                             = "subnet-08826650c04890e67"
+    ipv6_cidr_block                                = null
+    ipv6_cidr_block_association_id                 = null
+    ipv6_native                                    = false
+    map_customer_owned_ip_on_launch                = false
+    map_public_ip_on_launch                        = false
+    outpost_arn                                    = null
+    owner_id                                       = "566307772614"
+    private_dns_hostname_type_on_launch            = "ip-name"
+    tags                                           = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-private"
+        "Project"       = "myproject"
+    }
+    tags_all                                       = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-private"
+        "Project"       = "myproject"
+    }
+    vpc_id                                         = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_subnet.public:
+resource "aws_subnet" "public" {
+    arn                                            = "arn:aws:ec2:us-east-1:566307772614:subnet/subnet-060e35b292347115d"
+    assign_ipv6_address_on_creation                = false
+    availability_zone                              = "us-east-1c"
+    availability_zone_id                           = "use1-az4"
+    cidr_block                                     = "10.2.1.0/24"
+    customer_owned_ipv4_pool                       = null
+    enable_dns64                                   = false
+    enable_lni_at_device_index                     = 0
+    enable_resource_name_dns_a_record_on_launch    = false
+    enable_resource_name_dns_aaaa_record_on_launch = false
+    id                                             = "subnet-060e35b292347115d"
+    ipv6_cidr_block                                = null
+    ipv6_cidr_block_association_id                 = null
+    ipv6_native                                    = false
+    map_customer_owned_ip_on_launch                = false
+    map_public_ip_on_launch                        = true
+    outpost_arn                                    = null
+    owner_id                                       = "566307772614"
+    private_dns_hostname_type_on_launch            = "ip-name"
+    tags                                           = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-public"
+        "Project"       = "myproject"
+    }
+    tags_all                                       = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-public"
+        "Project"       = "myproject"
+    }
+    vpc_id                                         = "vpc-03605ac1a99d16e7b"
+}
+
+# module.environment.aws_vpc.main:
+resource "aws_vpc" "main" {
+    arn                                  = "arn:aws:ec2:us-east-1:566307772614:vpc/vpc-03605ac1a99d16e7b"
+    assign_generated_ipv6_cidr_block     = false
+    cidr_block                           = "10.2.0.0/16"
+    default_network_acl_id               = "acl-003f9199f030415a4"
+    default_route_table_id               = "rtb-089557b97dbb982a2"
+    default_security_group_id            = "sg-052d5844a4528fc59"
+    dhcp_options_id                      = "dopt-03a5b59d9f562324e"
+    enable_dns_hostnames                 = true
+    enable_dns_support                   = true
+    enable_network_address_usage_metrics = false
+    id                                   = "vpc-03605ac1a99d16e7b"
+    instance_tenancy                     = "default"
+    ipv6_association_id                  = null
+    ipv6_cidr_block                      = null
+    ipv6_cidr_block_network_border_group = null
+    ipv6_ipam_pool_id                    = null
+    ipv6_netmask_length                  = 0
+    main_route_table_id                  = "rtb-089557b97dbb982a2"
+    owner_id                             = "566307772614"
+    tags                                 = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-vpc"
+        "Project"       = "myproject"
+    }
+    tags_all                             = {
+        "BackupEnabled" = "true"
+        "Compliance"    = "required"
+        "CostCenter"    = "engineering-prod"
+        "Environment"   = "prod"
+        "ManagedBy"     = "terraform"
+        "Name"          = "myproject-prod-vpc"
+        "Project"       = "myproject"
+    }
+}
+
+# module.environment.tls_private_key.app[0]:
+resource "tls_private_key" "app" {
+    algorithm                     = "RSA"
+    ecdsa_curve                   = "P224"
+    id                            = "7dbcf5d5997becec5b2b3cad66b64c658921133e"
+    private_key_openssh           = (sensitive value)
+    private_key_pem               = (sensitive value)
+    private_key_pem_pkcs8         = (sensitive value)
+    public_key_fingerprint_md5    = "61:c0:1c:02:d2:59:2c:18:a8:8a:45:95:2e:ae:a5:07"
+    public_key_fingerprint_sha256 = "SHA256:CUzjsWfqZHtKwrPc2ivCGMylwgVnEW/bBiz3uwPACOI"
+    public_key_openssh            = <<-EOT
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQhYU7LuVWWmxaKoz4MzvxMkRZjY2bce4Sme5KU2ZBXLQa0cy/Hg39kiKJUfFrjl+CrwYAQs41dL58wqin5fhbOQEKcGSpXxR+44GPH9i6VaKIGcpUid9umXqJjqnKhz3YzMp+GhMfbMT6mK2p14MbCkpTtCezLSqrvbcb9dvHYKBNSjr8CFJo9dsSyF55y6P+xAClWMjpNomz/yk44//g9GVXqpgWDH79oc1Y/s55Eb5VdYnPOLQ4kp49vfuaVkuDGkQ7l/yKCy6buEqTHeFM1X9Qt5QLTEuGrR1Uh+rqFPJqQpID2kKDsEfsv5fX6bdarqQhI7Z0EG86Wtnyr7oZ
+    EOT
+    public_key_pem                = <<-EOT
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0IWFOy7lVlpsWiqM+DM7
+        8TJEWY2Nm3HuEpnuSlNmQVy0GtHMvx4N/ZIiiVHxa45fgq8GAELONXS+fMKop+X4
+        WzkBCnBkqV8UfuOBjx/YulWiiBnKVInfbpl6iY6pyoc92MzKfhoTH2zE+pitqdeD
+        GwpKU7Qnsy0qq723G/Xbx2CgTUo6/AhSaPXbEsheecuj/sQApVjI6TaJs/8pOOP/
+        4PRlV6qYFgx+/aHNWP7OeRG+VXWJzzi0OJKePb37mlZLgxpEO5f8igsum7hKkx3h
+        TNV/ULeUC0xLhq0dVIfq6hTyakKSA9pCg7BH7L+X1+m3Wq6kISO2dBBvOlrZ8q+6
+        GQIDAQAB
+        -----END PUBLIC KEY-----
+    EOT
+    rsa_bits                      = 2048
+}
+
+
+Outputs:
+
+instance_id = "i-09d6ecf3d03751b48"
+instance_public_ip = "54.234.151.139"
+ssm_command_example = "aws ssm send-command --instance-ids i-09d6ecf3d03751b48 --document-name AWS-RunShellScript --parameters commands='echo hello from prod' --region us-east-1"
